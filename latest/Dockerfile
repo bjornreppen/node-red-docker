@@ -1,6 +1,22 @@
 ARG NODE_VERSION=6
 FROM node:${NODE_VERSION}
 
+RUN apt-get update \
+ && apt search linux-headers \
+ && apt-get install -y git make g++ coreutils inux-headers-4.9-amd64 libudev-dev
+
+RUN echo "**** OpenZwave ****" && \
+ git clone --depth=1 https://github.com/OpenZWave/open-zwave.git /tmp/open-zwave && \
+ ln -s /tmp/open-zwave /tmp/open-zwave-read-only && \
+ cd /tmp/open-zwave && \
+ make && \
+ make \
+	instlibdir=usr/lib \
+	pkgconfigdir="usr/lib/pkgconfig/" \
+	PREFIX=/usr \
+	sysconfdir=etc/openzwave \
+ install 
+
 # Home directory for Node-RED application source code.
 RUN mkdir -p /usr/src/node-red
 
