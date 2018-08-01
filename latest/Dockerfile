@@ -1,12 +1,9 @@
-ARG NODE_VERSION=6
+ARG NODE_VERSION=8-stretch
 FROM node:${NODE_VERSION}
 
-RUN apt-get update \
- && apt search linux-headers \
- && apt-get install -y git make g++ coreutils inux-headers-4.9-amd64 libudev-dev
-
-RUN echo "**** OpenZwave ****" && \
- git clone --depth=1 https://github.com/OpenZWave/open-zwave.git /tmp/open-zwave && \
+RUN apt-get update 
+RUN apt-get install -y linux-headers-amd64 libudev-dev libstdc++6 unzip
+RUN git clone --single-branch -b Dev --depth=1 https://github.com/OpenZWave/open-zwave.git /tmp/open-zwave && \
  ln -s /tmp/open-zwave /tmp/open-zwave-read-only && \
  cd /tmp/open-zwave && \
  make && \
