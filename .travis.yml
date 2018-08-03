@@ -11,36 +11,16 @@ before_install:
   - docker run --rm --privileged multiarch/qemu-user-static:register --reset
   - docker build -f latest/Dockerfile -t bjreppen/node-red-zwave .
   - docker build -f latest/Dockerfile -t bjreppen/node-red-zwave:v8 --build-arg NODE_VERSION=8 .
-  - docker build -f slim/Dockerfile -t bjreppen/node-red-zwave:slim .
-  - docker build -f slim/Dockerfile -t bjreppen/node-red-zwave:slim-v8 --build-arg NODE_VERSION=8 .
-  - docker build -f rpi/Dockerfile -t bjreppen/node-red-zwave:rpi .
-  - docker build -f rpi/Dockerfile -t bjreppen/node-red-zwave:rpi-v8 --build-arg NODE_VERSION=8 .
   - docker tag bjreppen/node-red-zwave bjreppen/node-red-zwave:$VERSION
   - docker tag bjreppen/node-red-zwave bjreppen/node-red-zwave:v6
   - docker tag bjreppen/node-red-zwave bjreppen/node-red-zwave:$VERSION-v6
   - docker tag bjreppen/node-red-zwave:v8 bjreppen/node-red-zwave:$VERSION-v8
-  - docker tag bjreppen/node-red-zwave:slim bjreppen/node-red-zwave:$VERSION-slim
-  - docker tag bjreppen/node-red-zwave:slim bjreppen/node-red-zwave:slim-v6
-  - docker tag bjreppen/node-red-zwave:slim bjreppen/node-red-zwave:$VERSION-slim-v6
-  - docker tag bjreppen/node-red-zwave:slim-v8 bjreppen/node-red-zwave:$VERSION-slim-v8
-  - docker tag bjreppen/node-red-zwave:rpi bjreppen/node-red-zwave:$VERSION-rpi
-  - docker tag bjreppen/node-red-zwave:rpi bjreppen/node-red-zwave:rpi-v6
-  - docker tag bjreppen/node-red-zwave:rpi bjreppen/node-red-zwave:$VERSION-rpi-v6
-  - docker tag bjreppen/node-red-zwave:rpi-v8 bjreppen/node-red-zwave:$VERSION-rpi-v8
 
 script:
   - docker run -d bjreppen/node-red-zwave:latest
   - docker ps | grep latest
   - docker run -d bjreppen/node-red-zwave:v8
   - docker ps | grep v8
-  - docker run -d bjreppen/node-red-zwave:slim
-  - docker ps | grep slim
-  - docker run -d bjreppen/node-red-zwave:slim-v8
-  - docker ps | grep slim-v8
-  - docker run -d bjreppen/node-red-zwave:rpi
-  - docker ps | grep rpi
-  - docker run -d bjreppen/node-red-zwave:rpi-v8
-  - docker ps | grep rpi-v8
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" -a "$TRAVIS_PULL_REQUEST" == "false" ]; then
