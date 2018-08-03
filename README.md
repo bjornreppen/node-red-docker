@@ -1,18 +1,24 @@
-# Node-RED-Docker
+# node-red-zwave
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/node-red/node-red-docker.svg)](https://greenkeeper.io/)
+Customized [Node-RED-Docker](https://github.com/node-red/node-red-docker) image with prebuilt Z-Wave support provided by [node-openzwave-shared](https://github.com/OpenZWave/node-openzwave-shared).
+
+After starting up the container search for zwave nodes in left side palette.
+
+![screenshot](./screenshot.png)
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/bjornreppen/node-red-zwave.svg)](https://greenkeeper.io/)
 
 This project describes some of the many ways Node-RED can be run under Docker.
 Some basic familiarity with Docker and the
 [Docker Command Line](https://docs.docker.com/engine/reference/commandline/cli/)
 is assumed.
 
-This project also provides the build for the `nodered/node-red-docker`
-container on [DockerHub](https://hub.docker.com/r/nodered/node-red-docker/).
+This project also provides the build for the `bjreppen/node-red-zwave`
+container on [DockerHub](https://hub.docker.com/r/bjreppen/node-red-zwave/).
 
 To run this directly in docker at it's simplest just run
 
-        docker run -it -p 1880:1880 --name mynodered nodered/node-red-docker
+        docker run -it -p 1880:1880 --name --device /dev/ttyACM0 mynodered bjreppen/node-red-zwave
 
 Let's dissect that command...
 
@@ -20,8 +26,7 @@ Let's dissect that command...
         -it             - attach a terminal session so we can see what is going on
         -p 1880:1880    - connect local port 1880 to the exposed internal port 1880
         --name mynodered - give this machine a friendly local name
-        nodered/node-red-docker - the image to base it on - currently Node-RED v0.14.5
-
+        bjreppen/node-red-zwave - the image to base it on - currently Node-RED v0.14.5
 
 Running that command should give a terminal window with a running instance of Node-RED
 
@@ -37,12 +42,12 @@ The advantage of doing this is that by giving it a name we can manipulate it
 more easily, and by fixing the host port we know we are on familiar ground.
 (Of course this does mean we can only run one instance at a time... but one step at a time folks...)
 
-If we are happy with what we see we can detach the terminal with `Ctrl-p``Ctrl-q` - the container will keep running in the background.
+If we are happy with what we see we can detach the terminal with ` Ctrl-p``Ctrl-q ` - the container will keep running in the background.
 
 To reattach to the terminal (to see logging) run:
 
         $ docker attach mynodered
-        
+
 If you need to restart the container (e.g. after a reboot or restart of the Docker daemon)
 
         $ docker start mynodered
@@ -59,25 +64,12 @@ container without permanently losing all of your customisations._
 
 The following images are built for each Node-RED release, using a Node.js v6 base image.
 
-- **latest** - uses [official Node.JS v6 base image](https://hub.docker.com/_/node/).
-- **slim** uses [Alpine Linux base image](https://hub.docker.com/r/mhart/alpine-node/).
-- **rpi** uses [RPi-compatible base image](https://hub.docker.com/r/hypriot/rpi-node/).
+- **latest** - uses [official Node.JS v8 base image](https://hub.docker.com/_/node/).
 
-Using Alpine Linux reduces the built image size (~100MB vs ~700MB) but removes
-standard dependencies that are required for native module compilation. If you
-want to add modules with native dependencies, use the standard image or extend
-the slim image with the missing packages.
-
-Additional images using a newer Node.js v8 base image are now available with the following tags.
-
-- **v8** 
-- **slim-v8**
-- **rpi-v8**
-
-Node-RED releases are also tagged with a version label, allowing you to fix on a specific version: `latest:X.Y.Z`, 
+Node-RED releases are also tagged with a version label, allowing you to fix on a specific version: `latest:X.Y.Z`,
 `slim:X.Y.Z`, `rpi:X.Y.Z`.
 
-You can see a full list of the tagged releases [here](https://hub.docker.com/r/nodered/node-red-docker/tags/).
+You can see a full list of the tagged releases [here](https://hub.docker.com/r/bjreppen/node-red-zwave/tags/).
 
 ## Project Layout
 
@@ -112,37 +104,37 @@ This is the command that starts Node-RED when the container is run.
 ### startup
 
 Node-RED is started using NPM start from this `/usr/src/node-red`, with the `--userDir`
-parameter pointing to the `/data` directory on the container. 
+parameter pointing to the `/data` directory on the container.
 
 The flows configuration file is set using an environment parameter (**FLOWS**),
-which defaults to *'flows.json'*. This can be changed at runtime using the
+which defaults to _'flows.json'_. This can be changed at runtime using the
 following command-line flag.
 
-        $ docker run -it -p 1880:1880 -e FLOWS=my_flows.json nodered/node-red-docker
+        $ docker run -it -p 1880:1880 -e FLOWS=my_flows.json bjreppen/node-red-zwave
 
 Node.js runtime arguments can be passed to the container using an environment
 parameter (**NODE_OPTIONS**). For example, to fix the heap size used by
 the Node.js garbage collector you would use the following command.
 
-        $ docker run -it -p 1880:1880 -e NODE_OPTIONS="--max_old_space_size=128" nodered/node-red-docker
+        $ docker run -it -p 1880:1880 -e NODE_OPTIONS="--max_old_space_size=128" bjreppen/node-red-zwave
 
 ## Adding Nodes
 
 Installing extra Node-RED nodes into an instance running with Docker can be
 achieved by manually installing those nodes into the container, using the cli or
 running npm commands within a container shell, or mounting a host directory with
-those nodes as a data volume. 
+those nodes as a data volume.
 
-### Node-RED Admin Tool 
+### Node-RED Admin Tool
 
 Using the administration tool, with port forwarding on the container to the host
-system, extra nodes can be installed without leaving the host system. 
+system, extra nodes can be installed without leaving the host system.
 
         $ npm install -g node-red-admin
         $ node-red-admin install node-red-node-openwhisk
 
 This tool assumes Node-RED is available at the following address
-`http://localhost:1880`. 
+`http://localhost:1880`.
 
 Refreshing the browser page should now reveal the newly added node in the palette.
 
@@ -170,12 +162,12 @@ the host directory will automatically appear in the container's file system.
 
 This command mounts the host's node-red directory, containing the user's
 configuration and installed nodes, as the user configuration directory inside
-the container. 
+the container.
 
-        $ docker run -it -p 1880:1880 -v ~/.node-red:/data --name mynodered nodered/node-red-docker
+        $ docker run -it -p 1880:1880 -v ~/.node-red:/data --name mynodered bjreppen/node-red-zwave
 
 _**Having file permissions issues after mounting a host directory?**_
-_Docker maps the internal container uuid to 1000 on the host system. If you are running as a user with a different uuid, e.g. the second user added on a system, the container user account won't be able to read files on the host system. Fix this by using the `--run $USER` flag. See [here for more details](https://github.com/node-red/node-red-docker/issues/9)._
+_Docker maps the internal container uuid to 1000 on the host system. If you are running as a user with a different uuid, e.g. the second user added on a system, the container user account won't be able to read files on the host system. Fix this by using the `--run $USER` flag. See [here for more details](https://github.com/bjornreppen/node-red-zwave/issues/9)._
 
 Adding extra nodes to the container can be accomplished by
 running npm install locally.
@@ -201,7 +193,7 @@ This Dockerfile builds a custom Node-RED image with the flightaware module
 installed from NPM.
 
 ```
-FROM nodered/node-red-docker
+FROM bjreppen/node-red-zwave
 RUN npm install node-red-contrib-flightaware
 ```
 
@@ -226,10 +218,10 @@ Docker allows you to the current state of a container to a new image. This
 means you can persist your changes as a new image that can be shared on other
 systems.
 
-        $ docker commit mynodered custom-node-red-docker
+        $ docker commit mynodered custom-node-red-zwave
 
-If we destroy the ```mynodered``` container, the instance can be recovered by
-spawning a new container using the ```custom-node-red-docker``` image.
+If we destroy the `mynodered` container, the instance can be recovered by
+spawning a new container using the `custom-node-red-zwave` image.
 
 ### Using Named Data Volumes
 
@@ -245,25 +237,25 @@ configuration data can be saved outside of the container and even shared between
 container instances.
 
 Let's create a new named data volume to persist our user data and run a new
-container using this volume. 
+container using this volume.
 
         $ docker volume create --name node_red_user_data
         $ docker volume ls
         DRIVER              VOLUME NAME
         local               node_red_user_data
-        $ docker run -it -p 1880:1880 -v node_red_user_data:/data --name mynodered nodered/node-red-docker
+        $ docker run -it -p 1880:1880 -v node_red_user_data:/data --name mynodered bjreppen/node-red-zwave
 
 Using Node-RED to create and deploy some sample flows, we can now destroy the
 container and start a new instance without losing our user data.
 
         $ docker rm mynodered
-        $ docker run -it -p 1880:1880 -v node_red_user_data:/data --name mynodered nodered/node-red-docker
+        $ docker run -it -p 1880:1880 -v node_red_user_data:/data --name mynodered bjreppen/node-red-zwave
 
 ## Updating
 
 Updating the base container image is as simple as
 
-        $ docker pull nodered/node-red-docker
+        $ docker pull bjreppen/node-red-zwave
         $ docker stop mynodered
         $ docker start mynodered
 
@@ -271,18 +263,18 @@ Updating the base container image is as simple as
 
 The barest minimum we need to just run Node-RED is
 
-    $ docker run -d -p 1880 nodered/node-red-docker
+    $ docker run -d -p 1880 bjreppen/node-red-zwave
 
 This will create a local running instance of a machine - that will have some
 docker id number and be running on a random port... to find out run
 
     $ docker ps -a
     CONTAINER ID        IMAGE                       COMMAND             CREATED             STATUS                     PORTS                     NAMES
-    4bbeb39dc8dc        nodered/node-red-docker:latest   "npm start"         4 seconds ago       Up 4 seconds               0.0.0.0:49154->1880/tcp   furious_yalow
+    4bbeb39dc8dc        bjreppen/node-red-zwave:latest   "npm start"         4 seconds ago       Up 4 seconds               0.0.0.0:49154->1880/tcp   furious_yalow
     $
 
 You can now point a browser to the host machine on the tcp port reported back, so in the example
-above browse to  `http://{host ip}:49154`
+above browse to `http://{host ip}:49154`
 
 ## Linking Containers
 
@@ -290,25 +282,24 @@ You can link containers "internally" within the docker runtime by using the --li
 
 For example I have a simple MQTT broker container available as
 
-        docker run -it --name mybroker nodered/node-red-docker
+        docker run -it --name mybroker bjreppen/node-red-zwave
 
 (no need to expose the port 1883 globally unless you want to... as we do magic below)
 
 Then run nodered docker - but this time with a link parameter (name:alias)
 
-        docker run -it -p 1880:1880 --name mynodered --link mybroker:broker nodered/node-red-docker
+        docker run -it -p 1880:1880 --name mynodered --link mybroker:broker bjreppen/node-red-zwave
 
 the magic here being the `--link` that inserts a entry into the node-red instance
-hosts file called *broker* that links to the mybroker instance....  but we do
+hosts file called _broker_ that links to the mybroker instance.... but we do
 expose the 1880 port so we can use an external browser to do the node-red editing.
 
-Then a simple flow like below should work - using the alias *broker* we just set up a second ago.
+Then a simple flow like below should work - using the alias _broker_ we just set up a second ago.
 
         [{"id":"190c0df7.e6f3f2","type":"mqtt-broker","broker":"broker","port":"1883","clientid":""},{"id":"37963300.c869cc","type":"mqtt in","name":"","topic":"test","broker":"190c0df7.e6f3f2","x":226,"y":244,"z":"f34f9922.0cb068","wires":[["802d92f9.7fd27"]]},{"id":"edad4162.1252c","type":"mqtt out","name":"","topic":"test","qos":"","retain":"","broker":"190c0df7.e6f3f2","x":453,"y":135,"z":"f34f9922.0cb068","wires":[]},{"id":"13d1cf31.ec2e31","type":"inject","name":"","topic":"","payload":"","payloadType":"date","repeat":"","crontab":"","once":false,"x":226,"y":157,"z":"f34f9922.0cb068","wires":[["edad4162.1252c"]]},{"id":"802d92f9.7fd27","type":"debug","name":"","active":true,"console":"false","complete":"false","x":441,"y":261,"z":"f34f9922.0cb068","wires":[]}]
 
 This way the internal broker is not exposed outside of the docker host - of course
-you may add `-p 1883:1883`  etc to the broker run command if you want to see it...
-
+you may add `-p 1883:1883` etc to the broker run command if you want to see it...
 
 ## Issues
 
@@ -316,25 +307,26 @@ Here is a list of common issues users have reported with possible solutions.
 
 ### User Permission Errors
 
-If you are seeing *permission denied* errors opening files or accessing host devices, try running the container as the root user. 
+If you are seeing _permission denied_ errors opening files or accessing host devices, try running the container as the root user.
 
 ```
-docker run -it -p 1880:1880 --name mynodered --user=root nodered/node-red-docker
+docker run -it -p 1880:1880 --name mynodered --user=root bjreppen/node-red-zwave
 ```
 
-References: 
+References:
 
-https://github.com/node-red/node-red-docker/issues/15
+https://github.com/bjornreppen/node-red-zwave/issues/15
 
-https://github.com/node-red/node-red-docker/issues/8
+https://github.com/bjornreppen/node-red-zwave/issues/8
 
 ### Accessing Host Devices
 
-If you want to access a device from the host inside the container, e.g. serial port, use the following command-line flag to pass access through. 
+If you want to access a device from the host inside the container, e.g. serial port, use the following command-line flag to pass access through.
 
 ```
-docker run -it -p 1880:1880 --name mynodered --device=/dev/ttyACM0 nodered/node-red-docker
+docker run -it -p 1880:1880 --name mynodered --device=/dev/ttyACM0 bjreppen/node-red-zwave
 ```
+
 References:
 https://github.com/node-red/node-red-docker/issues/15
 
@@ -343,8 +335,8 @@ https://github.com/node-red/node-red-docker/issues/15
 If you want to modify the default timezone, use the TZ environment variable with the [relevant timezone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
 
 ```
-docker run -it -p 1880:1880 --name mynodered -e TZ="Europe/London" nodered/node-red-docker
+docker run -it -p 1880:1880 --name mynodered -e TZ="Europe/London" bjreppen/node-red-zwave
 ```
 
 References:
-https://groups.google.com/forum/#!topic/node-red/ieo5IVFAo2o
+https://groups.google.com/forum/#!topic/bjornreppen/ieo5IVFAo2o
