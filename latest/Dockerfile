@@ -3,7 +3,7 @@ FROM node:${NODE_VERSION}
 
 RUN apt-get update
 RUN apt-get install -y linux-headers-amd64 libudev-dev libstdc++6 unzip
-RUN git clone --single-branch -b master --depth=1 https://github.com/OpenZWave/open-zwave.git /tmp/open-zwave && \
+RUN git clone --single-branch -b v1.4 --depth=1 https://github.com/OpenZWave/open-zwave.git /tmp/open-zwave && \
 	ln -s /tmp/open-zwave /tmp/open-zwave-read-only && \
 	cd /tmp/open-zwave && \
 	make && \
