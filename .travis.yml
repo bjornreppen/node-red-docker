@@ -10,11 +10,11 @@ before_install:
   - echo $VERSION
   - docker run --rm --privileged multiarch/qemu-user-static:register --reset
   - docker build -f latest/Dockerfile -t bjreppen/node-red-zwave .
-  - docker build -f latest/Dockerfile -t bjreppen/node-red-zwave:v8 --build-arg NODE_VERSION=8 .
+#  - docker build -f latest/Dockerfile -t bjreppen/node-red-zwave:v8 --build-arg NODE_VERSION=8 .
   - docker tag bjreppen/node-red-zwave bjreppen/node-red-zwave:$VERSION
-  - docker tag bjreppen/node-red-zwave bjreppen/node-red-zwave:v6
-  - docker tag bjreppen/node-red-zwave bjreppen/node-red-zwave:$VERSION-v6
-  - docker tag bjreppen/node-red-zwave:v8 bjreppen/node-red-zwave:$VERSION-v8
+#  - docker tag bjreppen/node-red-zwave bjreppen/node-red-zwave:v6
+#  - docker tag bjreppen/node-red-zwave bjreppen/node-red-zwave:$VERSION-v6
+#  - docker tag bjreppen/node-red-zwave:v8 bjreppen/node-red-zwave:$VERSION-v8
 
 script:
   - docker run -d bjreppen/node-red-zwave:latest
