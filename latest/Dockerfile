@@ -6,7 +6,7 @@ RUN apt-get install -y linux-headers-amd64 libudev-dev libstdc++6
 #RUN git clone --single-branch -b master --depth=1 https://github.com/OpenZWave/open-zwave.git /tmp/open-zwave && \
 RUN git clone https://github.com/OpenZWave/open-zwave.git /tmp/open-zwave && \
 	cd /tmp/open-zwave && \
-	git checkout 0dfabf9a8da58d878459ddc8719b1352db81ffd4 && \
+	git checkout b3dc48718cb5d1895454579f2c7def8f8a35d582 && \
 	ln -s /tmp/open-zwave /tmp/open-zwave-read-only && \
 	make && \
 	make \
