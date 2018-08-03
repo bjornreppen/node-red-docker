@@ -14,7 +14,7 @@ RUN git clone https://github.com/OpenZWave/open-zwave.git /tmp/open-zwave && \
 	pkgconfigdir="usr/lib/pkgconfig/" \
 	PREFIX=/usr \
 	sysconfdir=etc/openzwave \
-	install \
+	install && \
 	rm -rf /tmp/open-zwave
 
 # Home directory for Node-RED application source code.
