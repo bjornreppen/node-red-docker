@@ -1,18 +1,18 @@
 ARG NODE_VERSION=8-stretch
 FROM node:${NODE_VERSION}
 
-RUN apt-get update 
+RUN apt-get update
 RUN apt-get install -y linux-headers-amd64 libudev-dev libstdc++6 unzip
-RUN git clone --single-branch -b Dev --depth=1 https://github.com/OpenZWave/open-zwave.git /tmp/open-zwave && \
- ln -s /tmp/open-zwave /tmp/open-zwave-read-only && \
- cd /tmp/open-zwave && \
- make && \
- make \
+RUN git clone --single-branch -b master --depth=1 https://github.com/OpenZWave/open-zwave.git /tmp/open-zwave && \
+	ln -s /tmp/open-zwave /tmp/open-zwave-read-only && \
+	cd /tmp/open-zwave && \
+	make && \
+	make \
 	instlibdir=usr/lib \
 	pkgconfigdir="usr/lib/pkgconfig/" \
 	PREFIX=/usr \
 	sysconfdir=etc/openzwave \
- install 
+	install
 
 # Home directory for Node-RED application source code.
 RUN mkdir -p /usr/src/node-red
@@ -24,8 +24,8 @@ WORKDIR /usr/src/node-red
 
 # Add node-red user so we aren't running as root.
 RUN useradd --home-dir /usr/src/node-red --no-create-home node-red \
-    && chown -R node-red:node-red /data \
-    && chown -R node-red:node-red /usr/src/node-red
+	&& chown -R node-red:node-red /data \
+	&& chown -R node-red:node-red /usr/src/node-red
 
 USER node-red
 
