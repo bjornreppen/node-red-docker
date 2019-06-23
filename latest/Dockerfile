@@ -2,20 +2,7 @@ ARG NODE_VERSION=8
 FROM node:${NODE_VERSION}
 
 RUN apt-get update
-RUN apt-get install -y linux-headers-amd64 libudev-dev libstdc++6
-#RUN git clone --single-branch -b master --depth=1 https://github.com/OpenZWave/open-zwave.git /tmp/open-zwave && \
-RUN git clone https://github.com/OpenZWave/open-zwave.git /tmp/open-zwave && \
-	cd /tmp/open-zwave && \
-	git checkout 996373e6d0003c618fcbe21e467c3a6ca6ad89a3 && \
-	ln -s /tmp/open-zwave /tmp/open-zwave-read-only && \
-	make && \
-	make \
-	instlibdir=usr/lib \
-	pkgconfigdir="usr/lib/pkgconfig/" \
-	PREFIX=/usr \
-	sysconfdir=etc/openzwave \
-	install && \
-	rm -rf /tmp/open-zwave
+RUN apt-get install -y linux-headers-amd64 libudev-dev libstdc++6 libopenzwave1.5-dev libopenzwave1.5
 
 # Home directory for Node-RED application source code.
 RUN mkdir -p /usr/src/node-red
