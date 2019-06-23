@@ -62,10 +62,9 @@ container without permanently losing all of your customisations._
 
 ## Images
 
-The following images are built for each Node-RED release, using a Node.js v6 base image.
+The following images are built for each Node-RED release, using a Node.js v8 base image.
 
 - **latest** - uses [official Node.JS v8 base image](https://hub.docker.com/_/node/).
-
 Node-RED releases are also tagged with a version label, allowing you to fix on a specific version: `latest:X.Y.Z`,
 `slim:X.Y.Z`, `rpi:X.Y.Z`.
 
@@ -307,7 +306,7 @@ Here is a list of common issues users have reported with possible solutions.
 
 ### User Permission Errors
 
-If you are seeing _permission denied_ errors opening files or accessing host devices, try running the container as the root user.
+If you are seeing *permission denied* errors opening files or accessing host devices, try running the container as the root user.
 
 ```
 docker run -it -p 1880:1880 --name mynodered --user=root bjreppen/node-red-zwave

@@ -19,7 +19,7 @@ script:
   - docker ps | grep v8
 
 after_success:
-  - if [ "$TRAVIS_BRANCH" == "master" -a "$TRAVIS_PULL_REQUEST" == "false" ]; then
+  - if [ -n "$TRAVIS_TAG" ]; then
     docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD";
     docker push bjreppen/node-red-zwave;
     fi
